@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Аналитика безопасности</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0f1a;
+            font-family: 'Courier New', 'Monaco', monospace;
+            padding: 20px;
+            color: #00ffcc;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #0d1117;
+            border: 1px solid #00ffcc;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 0 20px rgba(0,255,204,0.2);
+        }
+        h1 {
+            font-size: 22px;
+            border-bottom: 1px solid #00ffcc;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            color: #ff4444;
+        }
+        .info-block {
+            background: #00000055;
+            border-left: 3px solid #00ffcc;
+            padding: 12px;
+            margin: 15px 0;
+            font-size: 14px;
+            word-break: break-all;
+        }
+        .label {
+            color: #ffaa44;
+            font-weight: bold;
+        }
+        .coord {
+            font-size: 18px;
+            color: #ffaa44;
+        }
+        button {
+            background: #00ffcc22;
+            border: 1px solid #00ffcc;
+            color: #00ffcc;
+            padding: 12px 24px;
+            font-family: monospace;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #00ffcc44;
+        }
+        .map {
+            width: 100%;
+            height: 300px;
+            margin: 15px 0;
+            border: 1px solid #00ffcc;
+            background: #1a1f2a;
+        }
+        .warning {
+            color: #ff8888;
+            font-size: 12px;
+            margin-top: 20px;
+            border-top: 1px solid #333;
+            padding-top: 12px;
+        }
+        pre {
+            background: #000000aa;
+            padding: 12px;
+            overflow-x: auto;
+            font-size: 11px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>⚡ ГЕОЛОКАЦИОННЫЙ АНАЛИЗАТОР ⚡</h1>
+    <div id="status">Инициализация... Разрешите доступ к геолокации</div>
+    
+    <div class="info-block" id="ipInfo">
+        <span class="label">🌐 IP-адрес:</span> <span id="ip">—</span><br>
+        <span class="label">📍 Провайдер / Город (по IP):</span> <span id="city">—</span><br>
+        <span class="label">📡 Координаты по IP (прибл.):</span> <span id="ipCoords">—</span>
+    </div>
+
+    <div class="info-block" id="gpsInfo" style="border-left-color: #ff4444;">
+        <span class="label">🎯 ТОЧНАЯ ГЕОЛОКАЦИЯ (GPS/WiFi):</span><br>
+        <span class="coord" id="gpsCoords">—</span><br>
+        <span class="label">🗺️ Точность:</span> <span id="accuracy">—</span> метров<br>
+        <span class="label">⏱️ Время получения:</span> <span id="time">—</span>
+    </div>
+
+    <div id="mapContainer" class="map" style="display:none;"></div>
+    
+    <div class="info-block">
+        <span class="label">📱 Устройство:</span> <span id="device">—</span><br>
+        <span class="label">🕒 Часовой пояс:</span> <span id="timezone">—</span><br>
+        <span class="label">🔤 Язык браузера:</span> <span id="lang">—</span><br>
+        <span class="label">🖥️ Разрешение экрана:</span> <span id="screen">—</span><br>
+        <span class="label">📶 Тип соединения:</span> <span id="conn">—</span>
+    </div>
+
+    <button id="saveBtn">💾 СОХРАНИТЬ ДАННЫЕ (JSON)</button>
+    <pre id="outputData" style="display:none;"></pre>
+    <div class="warning">⚠️ Данные получены с вашего устройства. Никакая информация не передаётся на сервер — только публичные API.</div>
+</div>
+
+<script>
+    // ========== 1. Сбор данных об устройстве ==========
+    const deviceInfo = {
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+        language: navigator.language,
+        languages: navigator.languages,
+        cookieEnabled: navigator.cookieEnabled,
+        doNotTrack: navigator.doNotTrack,
+        hardwareConcurrency: navigator.hardwareConcurrency || "неизвестно",
+        deviceMemory: navigator.deviceMemory || "неизвестно",
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        screenWidth: screen.width,
+        screenHeight: screen.height,
+        colorDepth: screen.colorDepth,
+        touchSupport: 'ontouchstart' in window,
+        connection: navigator.connection ? `${navigator.connection.effectiveType} (${navigator.connection.downlink} Mbps)` : 'неизвестно'
+    };
+
+    document.getElementById('device').innerText = `${deviceInfo.userAgent.substring(0, 80)}...`;
+    document.getElementById('timezone').innerText = deviceInfo.timezone;
+    document.getElementById('lang').innerText = deviceInfo.language;
+    document.getElementById('screen').innerText = `${deviceInfo.screenWidth}x${deviceInfo.screenHeight}`;
+    document.getElementById('conn').innerText = deviceInfo.connection;
+
+    // ========== 2. Получение IP и гео по IP (через ip-api.com, бесплатно, без ключа) ==========
+    async function getIpInfo() {
+        try {
+            const response = await fetch('http://ip-api.com/json/?fields=status,country,regionName,city,lat,lon,isp,org,query');
+            const data = await response.json();
+            if (data.status === 'success') {
+                document.getElementById('ip').innerText = data.query;
+                document.getElementById('city').innerText = `${data.city}, ${data.regionName}, ${data.country} (${data.isp})`;
+                document.getElementById('ipCoords').innerText = `${data.lat}, ${data.lon}`;
+                window.ipLat = data.lat;
+                window.ipLon = data.lon;
+                return data;
+            }
+        } catch(e) {
+            document.getElementById('city').innerText = 'Ошибка получения IP гео';
+        }
+        return null;
+    }
+
+    // ========== 3. ТОЧНАЯ ГЕОЛОКАЦИЯ (GPS) ==========
+    let gpsCoords = null;
+    function getAccurateLocation() {
+        if (!navigator.geolocation) {
+            document.getElementById('gpsCoords').innerHTML = '❌ Геолокация не поддерживается браузером';
+            return;
+        }
+
+        document.getElementById('status').innerHTML = '⏳ Запрос точного местоположения... Разрешите доступ браузеру.';
+
+        const options = {
+            enableHighAccuracy: true,   // использовать GPS
+            timeout: 15000,
+            maximumAge: 0
+        };
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                const acc = position.coords.accuracy;
+                const time = new Date(position.timestamp).toLocaleString();
+                
+                gpsCoords = { lat, lon, acc, time };
+                
+                document.getElementById('gpsCoords').innerHTML = `📍 ${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+                document.getElementById('accuracy').innerHTML = `${Math.round(acc)} метров`;
+                document.getElementById('time').innerHTML = time;
+                document.getElementById('status').innerHTML = '✅ Точные координаты получены!';
+                
+                // Показать карту (OpenStreetMap)
+                showMap(lat, lon);
+                
+                // Сохранить все данные в глобальную переменную для выгрузки
+                window.collectedData = {
+                    timestamp: new Date().toISOString(),
+                    device: deviceInfo,
+                    ipGeo: { lat: window.ipLat, lon: window.ipLon, city: document.getElementById('city').innerText },
+                    gps: { lat, lon, accuracy: acc, time },
+                    fullUrl: window.location.href,
+                    referrer: document.referrer
+                };
+            },
+            (error) => {
+                let errMsg = '';
+                switch(error.code) {
+                    case 1: errMsg = 'ПОЛЬЗОВАТЕЛЬ ЗАПРЕТИЛ ДОСТУП К ГЕОЛОКАЦИИ'; break;
+                    case 2: errMsg = 'Невозможно определить положение (ошибка сети/датчиков)'; break;
+                    case 3: errMsg = 'Тайм-аут'; break;
+                    default: errMsg = error.message;
+                }
+                document.getElementById('gpsCoords').innerHTML = `❌ ОШИБКА: ${errMsg}`;
+                document.getElementById('status').innerHTML = '❌ GPS отказано или недоступно';
+                window.collectedData = {
+                    timestamp: new Date().toISOString(),
+                    device: deviceInfo,
+                    ipGeo: { lat: window.ipLat, lon: window.ipLon, city: document.getElementById('city').innerText },
+                    gps: null,
+                    error: errMsg
+                };
+            },
+            options
+        );
+    }
+
+    // ========== 4. Карта (Leaflet + OpenStreetMap) ==========
+    function showMap(lat, lon) {
+        const mapDiv = document.getElementById('mapContainer');
+        mapDiv.style.display = 'block';
+        
+        // Подключаем Leaflet динамически
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+        document.head.appendChild(link);
+        
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+        script.onload = () => {
+            const map = L.map('mapContainer').setView([lat, lon], 15);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+            L.marker([lat, lon]).addTo(map).bindPopup('Точное местоположение').openPopup();
+        };
+        document.head.appendChild(script);
+    }
+
+    // ========== 5. Сохранение данных в файл ==========
+    document.getElementById('saveBtn').addEventListener('click', () => {
+        if (!window.collectedData) {
+            alert('Данные ещё не собраны. Дождитесь определения геолокации или разрешите доступ.');
+            return;
+        }
+        
+        const dataStr = JSON.stringify(window.collectedData, null, 2);
+        const blob = new Blob([dataStr], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `doks_${new Date().toISOString().slice(0,19)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        // Показать превью данных
+        const pre = document.getElementById('outputData');
+        pre.style.display = 'block';
+        pre.innerText = dataStr;
+    });
+
+    // ========== 6. Запуск ==========
+    (async () => {
+        await getIpInfo();      // сначала IP
+        getAccurateLocation();  // затем запрос GPS
+    })();
+</script>
+</body>
+</html>
