@@ -1,580 +1,799 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Загадки на время · Игра с друзьями + Чат</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Inter', system-ui, 'Montserrat', sans-serif;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>Новости • Админ-панель</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            background: radial-gradient(circle at 10% 30%, #0e1a2a, #03070f);
-            min-height: 100vh;
-            padding: 24px;
-            color: #f0f4ff;
-        }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #f5f7fa;
+      color: #1e293b;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 0.5s ease-out;
+    }
 
-        .game-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 28px;
-        }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(12px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
 
-        /* основная игровая зона */
-        .game-zone {
-            flex: 2.5;
-            background: rgba(12, 20, 32, 0.7);
-            backdrop-filter: blur(16px);
-            border-radius: 56px;
-            border: 1px solid #6c9eff;
-            padding: 28px;
-            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5);
-        }
+    .container {
+      max-width: 1000px;
+      width: 100%;
+      background: white;
+      border-radius: 32px;
+      box-shadow: 0 20px 40px -12px rgba(0,0,0,0.12);
+      padding: 30px 25px;
+      margin-bottom: 30px;
+      transition: all 0.25s ease;
+      animation: slideUp 0.4s ease-out;
+    }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            flex-wrap: wrap;
-            border-bottom: 1px solid #5f8eff;
-            padding-bottom: 15px;
-            margin-bottom: 24px;
-        }
+    @keyframes slideUp {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
 
-        .leader {
-            background: #0a1122cc;
-            padding: 8px 24px;
-            border-radius: 60px;
-            font-weight: bold;
-        }
+    h1, h2, h3 {
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
 
-        .riddle-card {
-            background: #07112b;
-            border-radius: 48px;
-            padding: 30px 20px;
-            text-align: center;
-            margin: 20px 0;
-        }
+    .site-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
 
-        .riddle-text {
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin-bottom: 30px;
-            line-height: 1.3;
-        }
+    .site-title i {
+      color: #3b82f6;
+      font-size: 2rem;
+      transition: transform 0.3s ease;
+    }
 
-        .timer {
-            font-size: 3.2rem;
-            font-family: monospace;
-            font-weight: 800;
-            background: #00000066;
-            display: inline-block;
-            padding: 10px 30px;
-            border-radius: 80px;
-            margin-bottom: 24px;
-            letter-spacing: 4px;
-        }
+    .site-title:hover i {
+      transform: rotate(-6deg) scale(1.02);
+    }
 
-        .answer-area {
-            display: flex;
-            gap: 14px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin: 20px 0;
-        }
+    .subhead {
+      color: #64748b;
+      font-weight: 400;
+      border-left: 4px solid #3b82f6;
+      padding-left: 16px;
+      margin-bottom: 24px;
+      font-size: 1rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      align-items: center;
+      animation: fadeIn 0.6s ease-out 0.1s both;
+    }
 
-        .answer-area input {
-            flex: 2;
-            min-width: 220px;
-            background: #0f182e;
-            border: none;
-            padding: 14px 24px;
-            border-radius: 60px;
-            font-size: 1rem;
-            color: white;
-            outline: none;
-        }
+    .admin-badge {
+      background: #eef2ff;
+      padding: 8px 16px;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #1e4f8a;
+      cursor: default;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
 
-        .answer-area button {
-            background: #3a6ea5;
-            border: none;
-            padding: 0 32px;
-            border-radius: 60px;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-        }
+    .admin-badge i {
+      font-size: 0.9rem;
+    }
 
-        .next-btn {
-            background: #2c5a2e;
-            margin-top: 12px;
-            width: 60%;
-        }
+    /* --- Админ-панель --- */
+    .admin-panel {
+      display: none;
+      background: #f8fafc;
+      border-radius: 28px;
+      padding: 24px 20px;
+      margin-top: 18px;
+      border: 1px solid #e2e8f0;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.02);
+      animation: expandIn 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+    }
 
-        .scoreboard {
-            display: flex;
-            gap: 18px;
-            justify-content: center;
-            margin: 20px 0 0;
-            flex-wrap: wrap;
-        }
+    @keyframes expandIn {
+      0% { opacity: 0; transform: scale(0.96) translateY(-8px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
 
-        .player-score {
-            background: #00000055;
-            padding: 6px 18px;
-            border-radius: 40px;
-        }
+    .admin-panel.visible {
+      display: block;
+    }
 
-        /* чат-панель */
-        .chat-panel {
-            flex: 1.2;
-            min-width: 280px;
-            background: rgba(6, 12, 22, 0.85);
-            backdrop-filter: blur(12px);
-            border-radius: 48px;
-            border: 1px solid #5588dd;
-            display: flex;
-            flex-direction: column;
-            height: 85vh;
-            padding: 22px;
-        }
+    .admin-panel h2 {
+      font-size: 1.4rem;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #0f172a;
+    }
 
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            margin-bottom: 18px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+    .admin-panel h2 i {
+      color: #3b82f6;
+      animation: pulse 2s infinite;
+    }
 
-        .chat-line {
-            background: #101b30;
-            border-radius: 24px;
-            padding: 8px 16px;
-            border-left: 4px solid #70b0ff;
-        }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
 
-        .chat-name {
-            font-weight: bold;
-            color: #b7d0ff;
-        }
+    .form-group {
+      margin-bottom: 18px;
+    }
 
-        .nick-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+      color: #334155;
+    }
 
-        .nick-row input {
-            flex: 1;
-            background: #0c142a;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 40px;
-            color: white;
-        }
+    .form-group input, 
+    .form-group textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 20px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+      background: white;
+      transition: 0.25s ease;
+      outline: none;
+      color: #0f172a;
+    }
 
-        .chat-form {
-            display: flex;
-            gap: 10px;
-        }
+    .form-group input:focus, 
+    .form-group textarea:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 5px rgba(59,130,246,0.12);
+      transform: scale(1.005);
+    }
 
-        .chat-form input {
-            flex: 1;
-            background: #0c142a;
-            border: none;
-            padding: 12px 16px;
-            border-radius: 40px;
-            color: white;
-        }
+    .form-group textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
 
-        button {
-            background: #3f68aa;
-            border: none;
-            border-radius: 60px;
-            padding: 0 20px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.07s linear;
-        }
+    .file-upload-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
 
-        footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 12px;
-            opacity: 0.6;
-        }
-    </style>
+    .file-upload-wrapper input[type="file"] {
+      flex: 1;
+      padding: 12px;
+      border: 1.5px dashed #cbd5e1;
+      border-radius: 30px;
+      background: white;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: 0.2s;
+    }
+
+    .file-upload-wrapper input[type="file"]:hover {
+      border-color: #3b82f6;
+      background: #fafcff;
+    }
+
+    .file-upload-wrapper input[type="file"]::file-selector-button {
+      background: #eef2ff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 40px;
+      font-weight: 600;
+      color: #1e4f8a;
+      margin-right: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .file-upload-wrapper input[type="file"]::file-selector-button:hover {
+      background: #d9e2ff;
+      transform: scale(1.02);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #3b82f6;
+      border: none;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 1rem;
+      font-family: 'Montserrat', sans-serif;
+      cursor: pointer;
+      transition: 0.2s ease;
+      box-shadow: 0 4px 12px -4px rgba(59,130,246,0.3);
+      border: 1px solid transparent;
+    }
+
+    .btn:hover {
+      background: #2563eb;
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 10px 20px -8px rgba(59,130,246,0.4);
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #1e293b;
+      box-shadow: none;
+    }
+
+    .btn-secondary:hover {
+      background: #cbd5e1;
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      box-shadow: 0 4px 12px -4px rgba(239,68,68,0.3);
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+      transform: translateY(-2px);
+    }
+
+    .admin-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    /* --- Ключ-строка --- */
+    .key-input-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      background: #f1f5f9;
+      padding: 12px 18px;
+      border-radius: 60px;
+      margin-bottom: 16px;
+      transition: 0.3s ease;
+      animation: fadeIn 0.5s ease-out 0.2s both;
+    }
+
+    .key-input-row input {
+      flex: 1;
+      min-width: 160px;
+      padding: 12px 18px;
+      border: none;
+      border-radius: 40px;
+      background: white;
+      font-family: 'Montserrat', sans-serif;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      transition: 0.2s;
+    }
+
+    .key-input-row input:focus {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+      box-shadow: 0 4px 12px rgba(59,130,246,0.08);
+    }
+
+    /* --- Список новостей --- */
+    .news-list {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      margin-top: 10px;
+    }
+
+    .news-item {
+      background: white;
+      border-radius: 28px;
+      padding: 20px 22px 22px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.03);
+      border: 1px solid #edf2f7;
+      transition: all 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+      animation: cardPop 0.45s ease-out both;
+      transform-origin: top center;
+    }
+
+    @keyframes cardPop {
+      0% { opacity: 0; transform: scale(0.94) translateY(16px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .news-item:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 14px 32px -10px rgba(0,0,0,0.08);
+      transform: translateY(-4px);
+    }
+
+    .news-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .news-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.3;
+    }
+
+    .news-meta {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .news-body {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #1e293b;
+      margin: 12px 0 12px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .news-image {
+      max-width: 100%;
+      border-radius: 20px;
+      margin: 14px 0 6px;
+      border: 1px solid #eef2f6;
+      max-height: 400px;
+      object-fit: cover;
+      width: auto;
+      display: block;
+      background: #f1f5f9;
+      animation: imageReveal 0.5s ease-out;
+    }
+
+    @keyframes imageReveal {
+      0% { opacity: 0; transform: scale(0.96); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .news-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 12px;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 16px;
+    }
+
+    .btn-sm {
+      padding: 8px 18px;
+      font-size: 0.8rem;
+      border-radius: 40px;
+      background: #f1f5f9;
+      color: #334155;
+      border: none;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-sm:hover {
+      background: #e2e8f0;
+      transform: translateY(-2px);
+    }
+
+    .btn-sm.danger {
+      color: #b91c1c;
+      background: #fee2e2;
+    }
+    .btn-sm.danger:hover {
+      background: #fecaca;
+      transform: translateY(-2px);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #94a3b8;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      color: #cbd5e1;
+      transition: transform 0.3s ease;
+    }
+
+    .empty-state i:hover {
+      transform: rotate(6deg) scale(1.05);
+    }
+
+    /* Адаптив */
+    @media (max-width: 640px) {
+      .container { padding: 20px 16px; }
+      .site-title { font-size: 1.5rem; }
+      .news-title { font-size: 1.25rem; }
+      .admin-panel { padding: 18px 14px; }
+    }
+
+    /* Анимация удаления */
+    .news-item.removing {
+      animation: cardRemove 0.3s ease-in forwards;
+    }
+
+    @keyframes cardRemove {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0.92) translateY(-12px); }
+    }
+
+    /* Анимация добавления */
+    .news-item.adding {
+      animation: cardAdd 0.4s ease-out both;
+    }
+
+    @keyframes cardAdd {
+      0% { opacity: 0; transform: scale(0.92) translateY(30px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+  </style>
 </head>
 <body>
-<div class="game-container">
-    <!-- ИГРОВАЯ ЗОНА -->
-    <div class="game-zone">
-        <div class="header">
-            <span style="font-size: 1.7rem; font-weight: 800;">❓ ЗАГАДКИ НА ВРЕМЯ</span>
-            <div class="leader" id="leaderBoardInfo">🏆 Лидер: —</div>
-        </div>
 
-        <div class="riddle-card">
-            <div class="timer" id="timerDisplay">01:00</div>
-            <div class="riddle-text" id="riddleText">Загрузка загадки...</div>
-            <div class="answer-area">
-                <input type="text" id="answerInput" placeholder="Ваш ответ...">
-                <button id="submitAnswer">✅ Ответить</button>
-            </div>
-            <button id="nextRiddleBtn" class="next-btn" style="background:#4c6b8f;">⏩ Следующая загадка (только ведущий)</button>
-        </div>
+<div class="container">
+  <div class="site-title">
+    <i class="fas fa-newspaper"></i> 
+    <span>Новостной портал</span>
+  </div>
+  <div class="subhead">
+    <span><i class="far fa-clock" style="margin-right: 6px;"></i> Свежие новости</span>
+    <span class="admin-badge" id="adminStatusBadge">
+      <i class="fas fa-lock"></i> Админ-режим: выкл
+    </span>
+  </div>
 
-        <div id="gameStatus" class="status" style="background:#07182e; border-radius:40px; padding:10px; text-align:center;">⏳ Ожидание хода...</div>
+  <!-- Блок ввода ключа -->
+  <div class="key-input-row">
+    <i class="fas fa-key" style="color: #64748b;"></i>
+    <input type="password" id="adminKeyInput" placeholder="Введите ключ доступа" autocomplete="off">
+    <button class="btn" id="unlockAdminBtn"><i class="fas fa-unlock-alt"></i> Войти</button>
+    <button class="btn btn-secondary" id="lockAdminBtn" style="display: none;"><i class="fas fa-lock"></i> Выйти</button>
+  </div>
 
-        <div class="scoreboard" id="scoreboard"></div>
-    </div>
-
-    <!-- ЧАТ С ДРУЗЬЯМИ -->
-    <div class="chat-panel">
-        <div style="font-weight: bold; margin-bottom: 14px;">💬 ОБЩИЙ ЧАТ</div>
-        <div class="chat-messages" id="chatMessages">
-            <div class="chat-line"><span class="chat-name">🎮 БОТ:</span> Добро пожаловать! Играем в загадки. Ведущий нажимает "Следующая загадка", отвечаем по очереди или кто первый.</div>
+  <!-- Админ-панель (добавление новостей) -->
+  <div class="admin-panel" id="adminPanel">
+    <h2><i class="fas fa-pen-fancy"></i> Создать новость</h2>
+    <form id="newsForm">
+      <div class="form-group">
+        <label for="newsTitle">Заголовок</label>
+        <input type="text" id="newsTitle" placeholder="Например: Открытие нового парка" required>
+      </div>
+      <div class="form-group">
+        <label for="newsText">Текст новости</label>
+        <textarea id="newsText" placeholder="Подробности события..." required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="newsImage"><i class="far fa-image"></i> Фото (jpg, png, webp)</label>
+        <div class="file-upload-wrapper">
+          <input type="file" id="newsImage" accept="image/*">
         </div>
-        <div class="nick-row">
-            <input type="text" id="nicknameInput" placeholder="Ваше имя" maxlength="16" value="Игрок">
-            <button id="randomNickBtn">🎲 Рандом</button>
-        </div>
-        <div class="chat-form">
-            <input type="text" id="chatInput" placeholder="Написать в чат...">
-            <button id="sendChatBtn">➤</button>
-        </div>
-    </div>
+        <small style="color: #94a3b8; display: block; margin-top: 6px;">Файл сохраняется в локальное хранилище как Data URL</small>
+      </div>
+      <div class="admin-actions">
+        <button type="submit" class="btn"><i class="fas fa-cloud-upload-alt"></i> Опубликовать</button>
+        <button type="button" class="btn btn-secondary" id="clearAllNewsBtn"><i class="fas fa-trash-alt"></i> Удалить все</button>
+      </div>
+    </form>
+    <p style="margin-top: 16px; font-size: 0.9rem; color: #475569;"><i class="fas fa-info-circle"></i> Новости сохраняются в браузере (localStorage). При переносе файла данные остаются.</p>
+  </div>
 </div>
-<footer>⚡ Игра «Загадки на время» — правильный ответ приносит очки. У кого больше — победа! (Таймер 60 сек)</footer>
+
+<!-- Список новостей -->
+<div class="container" style="padding-bottom: 20px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+    <h2 style="font-size: 1.4rem; display: flex; gap: 8px;"><i class="fas fa-list-ul" style="color: #3b82f6;"></i> Лента</h2>
+    <span id="newsCount" style="background: #eef2ff; padding: 4px 14px; border-radius: 40px; font-size: 0.8rem; font-weight: 600;">0</span>
+  </div>
+  <div id="newsContainer" class="news-list">
+    <div class="empty-state">
+      <i class="far fa-newspaper"></i>
+      <p>Пока нет новостей. Станьте первым!</p>
+    </div>
+  </div>
+</div>
 
 <script>
-    // ------------------- БАНК ЗАГАДОК (вопрос-ответ) ------------------
-    const riddles = [
-        { question: "Висит груша, нельзя скушать. Что это?", answer: "лампочка" },
-        { question: "Без окон, без дверей — полна горница людей.", answer: "яйцо" },
-        { question: "Зимой и летом одним цветом.", answer: "ель" },
-        { question: "Сидит дед, во сто шуб одет. Кто его раздевает, тот слёзы проливает.", answer: "лук" },
-        { question: "Маленькое, кругленькое, а за хвост не поймаешь.", answer: "клубок" },
-        { question: "Не лает, не кусает, а в дом не пускает.", answer: "замок" },
-        { question: "Чёрная корова весь мир поборола.", answer: "ночь" },
-        { question: "Что можно приготовить, но нельзя съесть?", answer: "уроки" },
-        { question: "Без рук, без ног, а ворота открывает.", answer: "ветер" },
-        { question: "Весь мир кормлю, а сама есть не прошу.", answer: "земля" },
-        { question: "Что за чудо-синий дом, окна светлые кругом, носит обувь из резины, а питается бензином?", answer: "автобус" },
-        { question: "На минуту в землю врос разноцветный чудо-мост.", answer: "радуга" },
-        { question: "В воде родится, а воды боится.", answer: "соль" },
-        { question: "Говорит она беззвучно, а понятно и нескучно. Ты беседуй чаще с ней — станешь вчетверо умней.", answer: "книга" },
-        { question: "Утром — на четырёх ногах, днём — на двух, вечером — на трёх.", answer: "человек" }
-    ];
+  (function() {
+    // --- Константы ---
+    const STORAGE_KEY = 'newsApp_articles';
+    const ADMIN_KEY = 'admin123';
 
-    let players = [];          // { name, score }
-    let currentPlayerIndex = 0;
-    let currentRiddle = null;
-    let currentAnswer = "";
-    let timerInterval = null;
-    let timeLeft = 60;
-    let roundActive = true;
-    let gameLeader = "";
+    // --- DOM ---
+    const adminPanel = document.getElementById('adminPanel');
+    const adminStatusBadge = document.getElementById('adminStatusBadge');
+    const keyInput = document.getElementById('adminKeyInput');
+    const unlockBtn = document.getElementById('unlockAdminBtn');
+    const lockBtn = document.getElementById('lockAdminBtn');
+    const newsForm = document.getElementById('newsForm');
+    const titleInput = document.getElementById('newsTitle');
+    const textInput = document.getElementById('newsText');
+    const imageInput = document.getElementById('newsImage');
+    const newsContainer = document.getElementById('newsContainer');
+    const newsCountSpan = document.getElementById('newsCount');
+    const clearAllBtn = document.getElementById('clearAllNewsBtn');
 
-    // Элементы DOM
-    const riddleText = document.getElementById('riddleText');
-    const timerDisplay = document.getElementById('timerDisplay');
-    const answerInput = document.getElementById('answerInput');
-    const submitBtn = document.getElementById('submitAnswer');
-    const nextRiddleBtn = document.getElementById('nextRiddleBtn');
-    const gameStatusDiv = document.getElementById('gameStatus');
-    const scoreboardDiv = document.getElementById('scoreboard');
-    const leaderInfo = document.getElementById('leaderBoardInfo');
+    let isAdmin = false;
 
-    // ---- Функции игры ----
-    function loadNewRiddle() {
-        if(!roundActive) return;
-        // случайная загадка
-        const randomIndex = Math.floor(Math.random() * riddles.length);
-        currentRiddle = riddles[randomIndex];
-        riddleText.innerText = currentRiddle.question;
-        currentAnswer = currentRiddle.answer.toLowerCase().trim();
-        answerInput.value = "";
-        timeLeft = 60;
-        updateTimerDisplay();
-        if(timerInterval) clearInterval(timerInterval);
-        startTimer();
-        gameStatusDiv.innerHTML = `⏳ Отвечает: ${players[currentPlayerIndex]?.name || "игрок"} | Введите ответ и нажмите "Ответить"`;
-        roundActive = true;
+    // --- Загрузка / сохранение ---
+    function loadNews() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        return stored ? JSON.parse(stored) : [];
+      } catch { return []; }
     }
 
-    function startTimer() {
-        timerInterval = setInterval(() => {
-            if(timeLeft <= 1) {
-                clearInterval(timerInterval);
-                timerDisplay.innerText = "00:00";
-                gameStatusDiv.innerHTML = "⌛ Время вышло! Никто не получает очко. Ведущий, нажмите 'Следующая загадка'.";
-                roundActive = false;
-            } else {
-                timeLeft--;
-                updateTimerDisplay();
-            }
-        }, 1000);
+    function saveNews(arr) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
     }
 
-    function updateTimerDisplay() {
-        let minutes = Math.floor(timeLeft / 60);
-        let seconds = timeLeft % 60;
-        timerDisplay.innerText = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
-    }
+    // --- Рендер с анимациями ---
+    function renderNews() {
+      const articles = loadNews();
+      if (!articles || articles.length === 0) {
+        newsContainer.innerHTML = `
+          <div class="empty-state">
+            <i class="far fa-newspaper"></i>
+            <p>Пока нет новостей. Добавьте первую!</p>
+          </div>
+        `;
+        newsCountSpan.textContent = '0';
+        return;
+      }
 
-    function submitAnswerFrom(playerName, answerText) {
-        if(!roundActive) {
-            gameStatusDiv.innerHTML = "⛔ Раунд не активен или время вышло. Начните новую загадку.";
-            return false;
-        }
-        if(!players[currentPlayerIndex] || players[currentPlayerIndex].name !== playerName) {
-            gameStatusDiv.innerHTML = `❗ Сейчас очередь ${players[currentPlayerIndex]?.name}. Дождитесь своего хода!`;
-            return false;
-        }
-        let userAnswer = answerText.trim().toLowerCase();
-        // нормализация
-        userAnswer = userAnswer.replace(/[?.!]/g, '').trim();
-        if(userAnswer === currentAnswer) {
-            // правильно!
-            players[currentPlayerIndex].score += 10;
-            addSystemMessage(`🎉 ${playerName} ответил правильно! +10 очков. Загадка: "${currentRiddle.question}" → Ответ: ${currentAnswer}`);
-            gameStatusDiv.innerHTML = `✅ Правильно! ${playerName} получает 10 очков. Ведущий, переключайте на следующую загадку.`;
-            roundActive = false;
-            if(timerInterval) clearInterval(timerInterval);
-            updateScoreboard();
-            updateLeader();
-            return true;
-        } else {
-            gameStatusDiv.innerHTML = `❌ Неправильно. Правильный ответ: "${currentAnswer}". Очко не засчитано. Ведущий, переключайте загадку.`;
-            addSystemMessage(`❌ ${playerName} ошибся. Правильный ответ: "${currentAnswer}"`);
-            roundActive = false;
-            if(timerInterval) clearInterval(timerInterval);
-            updateLeader();
-            return false;
-        }
-    }
+      const sorted = [...articles].reverse();
+      let html = '';
+      sorted.forEach((item, index) => {
+        const realIndex = articles.length - 1 - index;
+        const imageTag = item.imageData ? 
+          `<img src="${item.imageData}" alt="Фото новости" class="news-image" loading="lazy">` : '';
+        
+        html += `
+          <div class="news-item" data-index="${realIndex}" style="animation-delay: ${index * 0.05}s">
+            <div class="news-header">
+              <div class="news-title">${escapeHtml(item.title) || 'Без заголовка'}</div>
+              <div class="news-meta">
+                <i class="far fa-calendar-alt"></i> ${item.date || 'неизвестно'}
+              </div>
+            </div>
+            <div class="news-body">${escapeHtml(item.text) || ''}</div>
+            ${imageTag}
+            <div class="news-footer">
+              ${isAdmin ? `<button class="btn-sm danger" data-action="delete" data-idx="${realIndex}"><i class="fas fa-trash-alt"></i> Удалить</button>` : ''}
+            </div>
+          </div>
+        `;
+      });
 
-    function nextRiddle() {
-        if(timerInterval) clearInterval(timerInterval);
-        // переход к следующему игроку
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-        if(players.length === 0) {
-            gameStatusDiv.innerHTML = "Добавьте игроков через чат-команду /add Имя";
-            return;
-        }
-        roundActive = true;
-        loadNewRiddle();
-    }
+      newsContainer.innerHTML = html;
+      newsCountSpan.textContent = articles.length;
 
-    function addPlayer(name) {
-        if(!name.trim()) return;
-        if(players.find(p => p.name === name.trim())) {
-            addSystemMessage(`Игрок ${name} уже есть.`);
-            return;
-        }
-        players.push({ name: name.trim(), score: 0 });
-        updateScoreboard();
-        addSystemMessage(`➕ Игрок ${name} добавлен в игру!`);
-        if(players.length === 1) {
-            currentPlayerIndex = 0;
-            loadNewRiddle();
-        }
-        updateLeader();
-    }
-
-    function updateScoreboard() {
-        if(!scoreboardDiv) return;
-        scoreboardDiv.innerHTML = players.map(p => `<div class="player-score">${p.name}: ${p.score} очков</div>`).join('');
-        updateLeader();
-    }
-
-    function updateLeader() {
-        if(players.length === 0) { leaderInfo.innerText = "🏆 Лидер: —"; return; }
-        let best = players.reduce((max, p) => p.score > max.score ? p : max, players[0]);
-        gameLeader = best.name;
-        leaderInfo.innerText = `🏆 Лидер: ${gameLeader} (${best.score} очков)`;
-    }
-
-    function resetGame() {
-        if(timerInterval) clearInterval(timerInterval);
-        players = [];
-        currentPlayerIndex = 0;
-        roundActive = false;
-        updateScoreboard();
-        gameStatusDiv.innerHTML = "✨ Игра сброшена. Добавьте игроков командой /add Имя (в чате) и ведущий нажмите 'Следующая загадка'.";
-        riddleText.innerText = "Добавьте игроков и начните игру";
-        leaderInfo.innerText = "🏆 Лидер: —";
-        addSystemMessage("🔄 Игра сброшена. Добавляйте игроков через /add Имя");
-    }
-
-    // --- система чата + команды ---
-    let chatMessages = [];
-
-    function renderChat() {
-        const container = document.getElementById('chatMessages');
-        container.innerHTML = '';
-        chatMessages.slice(-60).forEach(msg => {
-            const div = document.createElement('div');
-            div.className = 'chat-line';
-            div.innerHTML = `<span class="chat-name">${escapeHtml(msg.nick)}:</span> ${escapeHtml(msg.text)}`;
-            container.appendChild(div);
+      if (isAdmin) {
+        document.querySelectorAll('[data-action="delete"]').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            const idx = parseInt(this.dataset.idx, 10);
+            if (!isNaN(idx)) deleteNewsItem(idx);
+          });
         });
-        container.scrollTop = container.scrollHeight;
-    }
-
-    function addChatMessage(nick, text) {
-        if(!text.trim()) return;
-        chatMessages.push({ nick: nick.substring(0,18), text: text.substring(0,200), ts: Date.now() });
-        if(chatMessages.length > 200) chatMessages = chatMessages.slice(-150);
-        renderChat();
-        localStorage.setItem('riddle_chat', JSON.stringify(chatMessages));
-    }
-
-    function addSystemMessage(msg) {
-        addChatMessage("📢 СИСТЕМА", msg);
+      }
     }
 
     function escapeHtml(str) {
-        if(!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if(m === '&') return '&amp;';
-            if(m === '<') return '&lt;';
-            if(m === '>') return '&gt;';
-            return m;
-        });
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     }
 
-    function loadChatHistory() {
-        let saved = localStorage.getItem('riddle_chat');
-        if(saved) {
-            try { chatMessages = JSON.parse(saved); renderChat(); } catch(e) {}
-        }
+    // --- Добавление с анимацией ---
+    function addNews(title, text, imageData) {
+      const articles = loadNews();
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short', year: 'numeric' });
+      const newItem = {
+        title: title.trim(),
+        text: text.trim(),
+        imageData: imageData || null,
+        date: dateStr,
+        timestamp: now.getTime()
+      };
+      articles.push(newItem);
+      saveNews(articles);
+      renderNews();
+      // подсветка последней добавленной
+      const items = document.querySelectorAll('.news-item');
+      if (items.length > 0) {
+        const last = items[items.length - 1];
+        last.classList.add('adding');
+        setTimeout(() => last.classList.remove('adding'), 500);
+      }
     }
 
-    // обработка команд в чате
-    function handleCommand(input) {
-        let parts = input.split(' ');
-        let cmd = parts[0].toLowerCase();
-        if(cmd === '/add' && parts[1]) {
-            addPlayer(parts.slice(1).join(' '));
-            return true;
+    // --- Удаление с анимацией ---
+    function deleteNewsItem(index) {
+      let articles = loadNews();
+      if (index < 0 || index >= articles.length) return;
+      
+      // визуальное удаление
+      const items = document.querySelectorAll('.news-item');
+      let targetEl = null;
+      for (let el of items) {
+        if (parseInt(el.dataset.index, 10) === index) {
+          targetEl = el;
+          break;
         }
-        if(cmd === '/reset') {
-            resetGame();
-            return true;
-        }
-        if(cmd === '/players') {
-            let list = players.map(p => `${p.name} (${p.score})`).join(', ');
-            addSystemMessage(`Текущие игроки: ${list || 'нет'}`);
-            return true;
-        }
-        return false;
+      }
+      if (targetEl) {
+        targetEl.classList.add('removing');
+        setTimeout(() => {
+          articles.splice(index, 1);
+          saveNews(articles);
+          renderNews();
+        }, 300);
+      } else {
+        articles.splice(index, 1);
+        saveNews(articles);
+        renderNews();
+      }
     }
 
-    // --- инициализация страницы ---
-    window.addEventListener('load', () => {
-        loadChatHistory();
-        // стартовые игроки для примера
-        if(players.length === 0) {
-            players.push({ name: "Капитан", score: 0 });
-            players.push({ name: "Старпом", score: 0 });
-            currentPlayerIndex = 0;
-            updateScoreboard();
-            loadNewRiddle();
-        } else {
-            updateScoreboard();
-        }
+    function clearAllNews() {
+      if (confirm('Удалить все новости без возможности восстановления?')) {
+        saveNews([]);
+        renderNews();
+      }
+    }
 
-        // элементы чата
-        const nicknameInput = document.getElementById('nicknameInput');
-        const randomNickBtn = document.getElementById('randomNickBtn');
-        const chatInput = document.getElementById('chatInput');
-        const sendChatBtn = document.getElementById('sendChatBtn');
+    // --- Админ-интерфейс ---
+    function updateAdminUI(adminMode) {
+      isAdmin = adminMode;
+      if (adminMode) {
+        adminPanel.classList.add('visible');
+        adminStatusBadge.innerHTML = `<i class="fas fa-unlock"></i> Админ-режим: вкл`;
+        adminStatusBadge.style.background = '#dbeafe';
+        adminStatusBadge.style.color = '#1e4f8a';
+        unlockBtn.style.display = 'none';
+        lockBtn.style.display = 'inline-flex';
+        keyInput.value = '';
+        keyInput.disabled = true;
+      } else {
+        adminPanel.classList.remove('visible');
+        adminStatusBadge.innerHTML = `<i class="fas fa-lock"></i> Админ-режим: выкл`;
+        adminStatusBadge.style.background = '#eef2ff';
+        adminStatusBadge.style.color = '#1e4f8a';
+        unlockBtn.style.display = 'inline-flex';
+        lockBtn.style.display = 'none';
+        keyInput.disabled = false;
+        keyInput.value = '';
+      }
+      renderNews();
+    }
 
-        if(localStorage.getItem('riddle_nick')) nicknameInput.value = localStorage.getItem('riddle_nick');
+    function handleAdminLogin() {
+      const entered = keyInput.value.trim();
+      if (entered === ADMIN_KEY) {
+        updateAdminUI(true);
+      } else {
+        alert('Неверный ключ доступа.');
+        keyInput.value = '';
+        keyInput.focus();
+      }
+    }
 
-        randomNickBtn.onclick = () => {
-            let names = ["Мудрец","Логик","Эрудит","Скорость","Титан","Профи"];
-            nicknameInput.value = names[Math.floor(Math.random()*names.length)] + Math.floor(Math.random()*99);
+    function handleAdminLogout() {
+      updateAdminUI(false);
+    }
+
+    // --- Обработка формы ---
+    function handleNewsSubmit(e) {
+      e.preventDefault();
+      if (!isAdmin) {
+        alert('Только администратор может публиковать новости.');
+        return;
+      }
+
+      const title = titleInput.value.trim();
+      const text = textInput.value.trim();
+      if (!title || !text) {
+        alert('Заполните заголовок и текст новости.');
+        return;
+      }
+
+      const file = imageInput.files[0];
+      if (file && !file.type.startsWith('image/')) {
+        alert('Пожалуйста, выберите изображение (jpg, png, webp и т.д.)');
+        return;
+      }
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          addNews(title, text, ev.target.result);
+          resetForm();
         };
-
-        sendChatBtn.onclick = () => {
-            let nick = nicknameInput.value.trim();
-            if(!nick) nick = "Гость";
-            localStorage.setItem('riddle_nick', nick);
-            let msg = chatInput.value;
-            if(msg.startsWith('/')) {
-                handleCommand(msg);
-            } else {
-                addChatMessage(nick, msg);
-            }
-            chatInput.value = '';
-        };
-        chatInput.onkeypress = (e) => { if(e.key === 'Enter') sendChatBtn.click(); };
-
-        submitBtn.onclick = () => {
-            let currentName = players[currentPlayerIndex]?.name;
-            if(!currentName) { gameStatusDiv.innerHTML = "Нет активного игрока. Добавьте участников через /add"; return; }
-            submitAnswerFrom(currentName, answerInput.value);
-        };
-        nextRiddleBtn.onclick = () => { nextRiddle(); };
-    });
-</script>
-</body>
-</html>
-    function syncGameToLocal() {
-        let gameState = { players, phase, gameLogs: gameLogs.slice(0,15) };
-        localStorage.setItem('mafia_game_state', JSON.stringify(gameState));
-    }
-    function loadGameState() {
-        let saved = localStorage.getItem('mafia_game_state');
-        if(saved) {
-            try { let data = JSON.parse(saved); players = data.players; phase = data.phase; gameLogs = data.gameLogs || []; renderPlayers(); updatePhaseDisplay(); } catch(e){}
-        }
+        reader.onerror = () => alert('Не удалось прочитать файл.');
+        reader.readAsDataURL(file);
+      } else {
+        addNews(title, text, null);
+        resetForm();
+      }
     }
 
-    window.addEventListener('load', () => {
-        loadChat();
-        if(!players.length) {
-            players = [];
-            addPlayer("Шериф");
-            addPlayer("Дон");
-            addPlayer("Мирный");
-        }
-        loadGameState();
-        renderPlayers();
-        updatePhaseDisplay();
-        const randomNickBtn = document.getElementById('randomNickBtn');
-        const sendChat = document.getElementById('sendChatBtn');
-        const chatInput = document.getElementById('chatInput');
-        const nicknameChat = document.getElementById('nicknameChat');
-        const addPlayerBtn = document.getElementById('addPlayerBtn');
-        const newPlayerName = document.getElementById('newPlayerName');
-        const nextPhaseBtn = document.getElementById('nextPhaseBtn');
-        const resetGameBtn = document.getElementById('resetGameBtn');
+    function resetForm() {
+      titleInput.value = '';
+      textInput.value = '';
+      imageInput.value = '';
+    }
 
-        if(localStorage.getItem('mafia_nick')) nicknameChat.value = localStorage.getItem('mafia_nick');
-        else nicknameChat.value = "Игрок" + Math.floor(Math.random()*900);
-        
-        randomNickBtn.onclick = () => { let nicks = ["Крестный","Шериф","Адвокат","Мэр","Детектив","Гангстер"]; nicknameChat.value = nicks[Math.floor(Math.random()*nicks.length)]+Math.floor(Math.random()*99); };
-        sendChat.onclick = () => { let nick = nicknameChat.value.trim(); if(!nick) nick="Аноним"; localStorage.setItem('mafia_nick', nick); addChatMessage(nick, chatInput.value); chatInput.value=''; };
-        chatInput.onkeypress = (e) => { if(e.key === 'Enter') sendChat.click(); };
-        addPlayerBtn.onclick = () => { addPlayer(newPlayerName.value); newPlayerName.value=''; syncGameToLocal(); };
-        nextPhaseBtn.onclick = () => { nextPhase(); syncGameToLocal(); };
-        resetGameBtn.onclick = () => { resetGame(); syncGameToLocal(); };
-        setInterval(() => syncGameToLocal(), 3000);
-        window.addEventListener('storage', (e) => { if(e.key === 'mafia_game_state') loadGameState(); if(e.key === 'mafia_chat_log') loadChat(); });
-    });
+    // --- Инициализация ---
+    function init() {
+      renderNews();
+      updateAdminUI(false);
+
+      unlockBtn.addEventListener('click', handleAdminLogin);
+      lockBtn.addEventListener('click', handleAdminLogout);
+      keyInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleAdminLogin();
+      });
+
+      newsForm.addEventListener('submit', handleNewsSubmit);
+      clearAllBtn.addEventListener('click', clearAllNews);
+    }
+
+    init();
+  })();
 </script>
 </body>
 </html>
